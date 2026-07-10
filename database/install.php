@@ -70,13 +70,13 @@ echo "Seed data loaded successfully.\n";
 // Create admin user
 echo "\n--- Create Admin User ---\n";
 echo "Username [admin]: ";
-$username = trim(fgets(STDIN)) ?: 'admin';
+    $username = trim((string) fgets(STDIN)) ?: 'admin';
 
-echo "Email [admin@dziekas.com]: ";
-$email = trim(fgets(STDIN)) ?: 'admin@dziekas.com';
+    echo "Email [admin@dziekas.com]: ";
+    $email = trim((string) fgets(STDIN)) ?: 'admin@dziekas.com';
 
-echo "Password [admin123]: ";
-$password = trim(fgets(STDIN)) ?: 'admin123';
+    echo "Password [admin123]: ";
+    $password = trim((string) fgets(STDIN)) ?: 'admin123';
 
 $hashedPassword = password_hash($password, PASSWORD_BCRYPT, ['cost' => 12]);
 
