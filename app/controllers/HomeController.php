@@ -84,7 +84,7 @@ class HomeController extends Controller
 
     public function toggleDarkMode(): void
     {
-        $current = Session::get('dark_mode', true);
+        $current = Session::get('dark_mode', false);
         Session::set('dark_mode', !$current);
 
         $referer = $_SERVER['HTTP_REFERER'] ?? '/';
