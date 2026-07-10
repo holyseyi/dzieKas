@@ -1,0 +1,4 @@
+name: dzieKas
+owner: holyseyi
+package: .
+kind: wasmer.io/App.v0
