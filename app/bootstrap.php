@@ -28,6 +28,9 @@ App\Core\Autoloader::register();
 // Start session
 App\Helpers\Session::start();
 
+// Global view helper functions (e(), img(), content_url(), ...)
+require dirname(__DIR__) . '/app/helpers/view_functions.php';
+
 // Gzip compression
 if (extension_loaded('zlib') && !ob_get_level()) {
     ob_start('ob_gzhandler');
