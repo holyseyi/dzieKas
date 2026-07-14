@@ -1,4 +1,5 @@
 <?php /** @var array<string,mixed> $stats */ ?>
+<?php /** @var array<int,array<string,mixed>> $recentVideos */ ?>
 <div class="dashboard">
     <div class="dashboard__actions" style="margin-bottom:1.5rem">
         <a class="btn btn--primary" href="/admin/media">📁 Media Library</a>
@@ -59,6 +60,28 @@
                             <td><?= e($u['created_at']) ?></td>
                         </tr>
                     <?php endforeach; ?>
+                </tbody>
+            </table>
+        </section>
+
+        <section class="panel">
+            <h2 class="panel__title">Recent Videos</h2>
+            <table class="table">
+                <thead><tr><th>Name</th><th>Folder</th><th>Size</th><th>Uploaded</th></tr></thead>
+                <tbody>
+                    <?php foreach ($recentVideos as $v): ?>
+                        <tr>
+                            <td>
+                                <a class="link" href="/storage/<?= e(ltrim($v['path'], '/')) ?>" target="_blank" rel="noopener">
+                                    🎬 <?= e($v['original_name']) ?>
+                                </a>
+                            </td>
+                            <td><?= e($v['folder_name']) ?></td>
+                            <td><?= e(format_bytes((int) $v['file_size'])) ?></td>
+                            <td><?= e($v['created_at']) ?></td>
+                        </tr>
+                    <?php endforeach; ?>
+                    <?php if (empty($recentVideos)): ?><tr><td colspan="4" class="muted">No videos uploaded yet. <a class="link" href="/admin/media">Upload now</a></td></tr><?php endif; ?>
                 </tbody>
             </table>
         </section>

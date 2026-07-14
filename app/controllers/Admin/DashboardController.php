@@ -40,6 +40,14 @@ class DashboardController extends Controller
             "SELECT id, username, email, created_at FROM users ORDER BY created_at DESC LIMIT 5"
         );
 
+        $recentVideos = $db->fetchAll(
+            "SELECT mf.id, mf.original_name, mf.path, mf.file_size, mf.created_at, mf2.name as folder_name
+             FROM media_files mf
+             JOIN media_folders mf2 ON mf.folder_id = mf2.id
+             WHERE mf.mime_type LIKE 'video/%'
+             ORDER BY mf.created_at DESC LIMIT 10"
+        );
+
         // Chart data - views last 7 days
         $chartData = $db->fetchAll(
             "SELECT date(created_at) as date, COUNT(*) as count FROM audit_logs
@@ -53,6 +61,7 @@ class DashboardController extends Controller
             'recentContent' => $recentContent,
             'topContent' => $topContent,
             'recentUsers' => $recentUsers,
+            'recentVideos' => $recentVideos,
             'chartData' => $chartData,
         ], 'layouts/admin');
     }
