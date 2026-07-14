@@ -38,12 +38,26 @@ class Database
             @chmod($dbDir, 0777);
         }
 
+        if (file_exists($dbPath) && !is_writable($dbPath)) {
+            @chmod($dbPath, 0666);
+        }
+
         try {
             $this->pdo = new PDO('sqlite:' . $dbPath, null, null, $config['options']);
             $this->pdo->exec('PRAGMA foreign_keys = ON');
             $this->pdo->exec('PRAGMA journal_mode = WAL');
         } catch (\PDOException $e) {
-            throw new RuntimeException('Unable to open database file: ' . $dbPath . ' - ' . $e->getMessage(), 0, $e);
+            if (!is_writable($dbDir) || (file_exists($dbPath) && !is_writable($dbPath))) {
+                @chmod($dbDir, 0777);
+                if (file_exists($dbPath)) {
+                    @chmod($dbPath, 0666);
+                }
+                $this->pdo = new PDO('sqlite:' . $dbPath, null, null, $config['options']);
+                $this->pdo->exec('PRAGMA foreign_keys = ON');
+                $this->pdo->exec('PRAGMA journal_mode = WAL');
+            } else {
+                throw new RuntimeException('Unable to open database file: ' . $dbPath . ' - ' . $e->getMessage(), 0, $e);
+            }
         }
     }
 

@@ -31,6 +31,69 @@ App\Helpers\Session::start();
 // Global view helper functions (e(), img(), content_url(), ...)
 require dirname(__DIR__) . '/app/helpers/view_functions.php';
 
+// Auto-initialize SQLite database if missing
+$dbConfig = require dirname(__DIR__) . '/config/database.php';
+$dbPath = $dbConfig['database'];
+$dbDir = dirname($dbPath);
+
+if (!is_dir($dbDir)) {
+    @mkdir($dbDir, 0777, true);
+    @chmod($dbDir, 0777);
+}
+
+if (!file_exists($dbPath)) {
+    try {
+        $pdo = new PDO('sqlite:' . $dbPath);
+        $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+        $pdo->exec('PRAGMA foreign_keys = ON');
+        $pdo->exec('PRAGMA journal_mode = WAL');
+        
+        $schema = file_get_contents(dirname(__DIR__) . '/database/schema.sql');
+        if ($schema) {
+            $pdo->exec($schema);
+        }
+        
+        $seed = file_get_contents(dirname(__DIR__) . '/database/seed.sql');
+        if ($seed) {
+            $pdo->exec($seed);
+        }
+        
+        $pdo->exec("INSERT OR IGNORE INTO users (role_id, username, email, password, display_name, is_active, email_verified_at) VALUES (1, 'admin', 'admin@dziekas.com', '" . password_hash('admin123', PASSWORD_BCRYPT, ['cost' => 12]) . "', 'Admin', 1, datetime('now'))");
+    } catch (\Throwable $e) {
+        // Database initialization failed
+    }
+}
+
+@chmod($dbDir, 0777);
+@chmod($dbPath, 0666);
+
+// Ensure storage directories exist
+$storageDirs = [
+    dirname(__DIR__) . '/storage/uploads/posters',
+    dirname(__DIR__) . '/storage/uploads/banners',
+    dirname(__DIR__) . '/storage/uploads/screenshots',
+    dirname(__DIR__) . '/storage/uploads/trailers',
+    dirname(__DIR__) . '/storage/uploads/subtitles',
+    dirname(__DIR__) . '/storage/uploads/avatars',
+    dirname(__DIR__) . '/storage/uploads/videos',
+    dirname(__DIR__) . '/storage/cache',
+    dirname(__DIR__) . '/storage/logs',
+    dirname(__DIR__) . '/storage/backups',
+];
+foreach ($storageDirs as $dir) {
+    if (!is_dir($dir)) {
+        @mkdir($dir, 0777, true);
+        @chmod($dir, 0777);
+    }
+}
+
+// Ensure public/storage symlink exists
+$publicStorage = dirname(__DIR__) . '/public/storage';
+$storageUploads = dirname(__DIR__) . '/storage/uploads';
+if (!file_exists($publicStorage)) {
+    @symlink($storageUploads, $publicStorage);
+}
+
 // Gzip compression
 if (extension_loaded('zlib') && !ob_get_level()) {
     ob_start('ob_gzhandler');
