@@ -29,9 +29,22 @@ class Database
             throw new RuntimeException('Database file not found. Please run the installation script.');
         }
 
-        $this->pdo = new PDO('sqlite:' . $dbPath, null, null, $config['options']);
-        $this->pdo->exec('PRAGMA foreign_keys = ON');
-        $this->pdo->exec('PRAGMA journal_mode = WAL');
+        $dbDir = dirname($dbPath);
+        if (!is_dir($dbDir)) {
+            mkdir($dbDir, 0777, true);
+        }
+
+        if (!is_writable($dbDir)) {
+            @chmod($dbDir, 0777);
+        }
+
+        try {
+            $this->pdo = new PDO('sqlite:' . $dbPath, null, null, $config['options']);
+            $this->pdo->exec('PRAGMA foreign_keys = ON');
+            $this->pdo->exec('PRAGMA journal_mode = WAL');
+        } catch (\PDOException $e) {
+            throw new RuntimeException('Unable to open database file: ' . $dbPath . ' - ' . $e->getMessage(), 0, $e);
+        }
     }
 
     public static function getInstance(): self

@@ -20,8 +20,11 @@ $seedPath = $basePath . '/database/seed.sql';
 
 // Create database directory if needed
 if (!is_dir($basePath . '/database')) {
-    mkdir($basePath . '/database', 0755, true);
+    mkdir($basePath . '/database', 0777, true);
 }
+
+// Ensure database directory is writable
+@chmod($basePath . '/database', 0777);
 
 // Create storage directories
 $dirs = [
