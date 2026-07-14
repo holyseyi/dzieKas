@@ -76,7 +76,14 @@ $user = $user ?? null;
             </section>
         <?php endif; ?>
 
-        <?php if (!empty($trailers) || !empty($c['trailer_url'])): ?>
+        <?php if (!empty($c['video_path'])): ?>
+            <section class="panel" id="watch">
+                <h2 class="panel__title">Watch</h2>
+                <div class="video-embed">
+                    <video src="<?= e(video_url($c['video_path'])) ?>" controls preload="metadata" style="width:100%;border-radius:8px;background:#000;"></video>
+                </div>
+            </section>
+        <?php elseif (!empty($trailers) || !empty($c['trailer_url'])): ?>
             <section class="panel" id="watch">
                 <h2 class="panel__title">Trailer</h2>
                 <?php

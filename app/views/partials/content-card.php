@@ -20,6 +20,9 @@ $rating = isset($item['imdb_rating']) ? (float) $item['imdb_rating'] : 0.0;
             <?php if ($rating > 0): ?>
                 <span class="card__rating">★ <?= e(number_format($rating, 1)) ?></span>
             <?php endif; ?>
+            <?php if (!empty($item['video_path'])): ?>
+                <span class="card__badge card__badge--video">▶ Video</span>
+            <?php endif; ?>
             <span class="card__overlay"><i>▶</i></span>
         </div>
         <div class="card__body">

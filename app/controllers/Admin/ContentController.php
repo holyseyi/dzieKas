@@ -16,6 +16,7 @@ use App\Models\Content;
 use App\Models\AuditLog;
 use App\Helpers\Slug;
 use App\Helpers\Image;
+use App\Helpers\Video;
 use App\Helpers\Security;
 use App\Helpers\Session;
 use App\Helpers\Validator;
@@ -110,6 +111,14 @@ class ContentController extends Controller
             $banner = Image::upload($_FILES['banner'], 'banners', $this->config['image_sizes']['banner']);
             if ($banner) {
                 $data['banner'] = $banner;
+            }
+        }
+
+        if (!empty($_FILES['video_file']['name'])) {
+            $video = Video::upload($_FILES['video_file'], 'videos');
+            if ($video) {
+                $data['video_path'] = $video;
+                $data['video_type'] = 'upload';
             }
         }
 
@@ -221,6 +230,7 @@ class ContentController extends Controller
             'status' => Security::sanitize((string) $this->input('status', 'draft')),
             'is_featured' => $this->input('is_featured') ? 1 : 0,
             'trailer_url' => Security::sanitize((string) $this->input('trailer_url', '')),
+            'video_type' => $this->input('remove_video') ? 'external' : ($this->input('video_type', 'upload')),
         ];
 
         if (!empty($_FILES['poster']['name'])) {
@@ -228,6 +238,15 @@ class ContentController extends Controller
             if ($poster) {
                 $data['poster'] = $poster;
             }
+        }
+
+        if (!empty($_FILES['video_file']['name'])) {
+            $video = Video::upload($_FILES['video_file'], 'videos');
+            if ($video) {
+                $data['video_path'] = $video;
+            }
+        } elseif ($this->input('remove_video')) {
+            $data['video_path'] = null;
         }
 
         $contentModel->update((int) $id, $data);

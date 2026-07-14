@@ -21,6 +21,7 @@ return [
     'per_page' => 24,
     'admin_per_page' => 20,
     'upload_max_size' => 10 * 1024 * 1024, // 10MB
+    'upload_max_video_size' => 500 * 1024 * 1024, // 500MB
     'allowed_image_types' => ['image/jpeg', 'image/png', 'image/webp', 'image/gif'],
     'allowed_video_types' => ['video/mp4', 'video/webm'],
     'session_lifetime' => 7200,

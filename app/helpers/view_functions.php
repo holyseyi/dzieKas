@@ -13,6 +13,7 @@ declare(strict_types=1);
 
 use App\Helpers\Security;
 use App\Helpers\Image;
+use App\Helpers\Video;
 
 if (!function_exists('e')) {
     /**
@@ -34,6 +35,16 @@ if (!function_exists('img')) {
     }
 }
 
+if (!function_exists('video_url')) {
+    /**
+     * Resolve an uploaded video path to a public URL.
+     */
+    function video_url(?string $path): string
+    {
+        return Video::url($path);
+    }
+}
+
 if (!function_exists('content_url')) {
     /**
      * Build the canonical detail URL for a content row.
@@ -45,9 +56,11 @@ if (!function_exists('content_url')) {
         $type = $item['type'] ?? 'movie';
         $slug = $item['slug'] ?? '';
 
-        return in_array($type, ['series', 'anime', 'k-drama'], true)
-            ? '/series/' . $slug
-            : '/movie/' . $slug;
+        return match ($type) {
+            'series', 'anime', 'k-drama' => '/series/' . $slug,
+            'video' => '/movie/' . $slug,
+            default => '/movie/' . $slug,
+        };
     }
 }
 
@@ -77,6 +90,7 @@ if (!function_exists('type_label')) {
             'anime' => 'Anime',
             'k-drama' => 'K-Drama',
             'documentary' => 'Documentary',
+            'video' => 'Video',
             'movie' => 'Movie',
             default => ucfirst((string) $type),
         };

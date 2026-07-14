@@ -332,4 +332,19 @@ class Content extends Model
 
         return $this->db->fetchAll($sql, [$limit]);
     }
+
+    /**
+     * Get latest uploaded videos.
+     *
+     * @return array<int, array<string, mixed>>
+     */
+    public function getLatestVideos(int $limit = 12): array
+    {
+        $sql = "SELECT c.* FROM content c
+                WHERE c.status = 'published'
+                AND c.video_path IS NOT NULL AND c.video_path != ''
+                ORDER BY c.published_at DESC LIMIT ?";
+
+        return $this->db->fetchAll($sql, [$limit]);
+    }
 }

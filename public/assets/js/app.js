@@ -1,0 +1,1 @@
+/* DzieKas - Main JavaScript */

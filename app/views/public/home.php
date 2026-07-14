@@ -82,6 +82,9 @@ $heroItems = !empty($hero) ? $hero : array_slice($featured ?: $latest, 0, 5);
         ['Hollywood', $hollywood, '/country/united-states'],
         ['Bollywood', $bollywood, '/country/india'],
     ];
+    if (!empty($latestVideos)) {
+        array_unshift($rows, ['Latest Videos', $latestVideos, null]);
+    }
     foreach ($rows as [$sectionTitle, $sectionItems, $sectionLink]) {
         include __DIR__ . '/../partials/content-row.php';
     }

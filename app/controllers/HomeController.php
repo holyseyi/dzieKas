@@ -38,6 +38,7 @@ class HomeController extends Controller
         $hollywood = $contentModel->getByCountry('united-states', 12);
         $bollywood = $contentModel->getByCountry('india', 12);
         $tvShows = $contentModel->getByCategory('tv-series', 12);
+        $latestVideos = $contentModel->getLatestVideos(12);
         $genres = $genreModel->getAllWithCount();
 
         $years = $db->fetchAll(
@@ -74,6 +75,7 @@ class HomeController extends Controller
             'hollywood' => $hollywood,
             'bollywood' => $bollywood,
             'tvShows' => $tvShows,
+            'latestVideos' => $latestVideos,
             'genres' => $genres,
             'years' => $years,
             'countries' => $countries,

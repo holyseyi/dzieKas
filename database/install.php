@@ -31,6 +31,7 @@ $dirs = [
     'storage/uploads/trailers',
     'storage/uploads/subtitles',
     'storage/uploads/avatars',
+    'storage/uploads/videos',
     'storage/cache',
     'storage/logs',
     'storage/backups',
