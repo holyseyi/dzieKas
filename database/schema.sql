@@ -164,6 +164,8 @@ CREATE TABLE IF NOT EXISTS content (
     user_rating_count INTEGER DEFAULT 0,
     reading_time INTEGER,
     published_at DATETIME,
+    video_path VARCHAR(255),
+    video_type VARCHAR(20) DEFAULT 'upload',
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (category_id) REFERENCES categories(id) ON DELETE SET NULL,

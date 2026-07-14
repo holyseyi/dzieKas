@@ -24,7 +24,12 @@ class AuthController extends Controller
             $this->redirect('/profile');
         }
 
-        $this->view('public/auth/login', ['title' => 'Login']);
+        $this->view('public/auth/login', [
+            'title' => 'Login',
+            'admin_username' => 'admin',
+            'admin_email' => 'admin@dziekas.com',
+            'admin_password' => 'admin123',
+        ]);
     }
 
     public function login(): void

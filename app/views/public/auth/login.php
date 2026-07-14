@@ -18,6 +18,14 @@
             </div>
             <button type="submit" class="btn btn--primary btn--block">Login</button>
         </form>
+        <?php if (!empty($admin_username) && !empty($admin_email) && !empty($admin_password)): ?>
+        <div class="auth-card__admin-credentials">
+            <p><strong>Admin Credentials</strong></p>
+            <p>Username: <?= e($admin_username) ?></p>
+            <p>Email: <?= e($admin_email) ?></p>
+            <p>Password: <?= e($admin_password) ?></p>
+        </div>
+        <?php endif; ?>
         <p class="auth-card__foot">No account? <a href="/register">Create one</a></p>
     </div>
 </div>
