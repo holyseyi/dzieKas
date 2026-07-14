@@ -36,7 +36,7 @@ $dbConfig = require dirname(__DIR__) . '/config/database.php';
 $dbPath = $dbConfig['database'];
 $dbDir = dirname($dbPath);
 
-if (!is_dir($dbDir)) {
+if (!is_dir($dbDir) || !is_writable($dbDir)) {
     @mkdir($dbDir, 0777, true);
     @chmod($dbDir, 0777);
 }
@@ -64,7 +64,6 @@ if (!file_exists($dbPath)) {
     }
 }
 
-@chmod($dbDir, 0777);
 @chmod($dbPath, 0666);
 
 // Ensure storage directories exist

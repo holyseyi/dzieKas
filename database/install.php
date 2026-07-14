@@ -14,17 +14,17 @@ declare(strict_types=1);
 echo "=== DzieKas Entertainment Portal Installer ===\n\n";
 
 $basePath = dirname(__DIR__);
-$dbPath = $basePath . '/database/dzieKas.sqlite';
+$dbPath = '/tmp/dzieKas.sqlite';
 $schemaPath = $basePath . '/database/schema.sql';
 $seedPath = $basePath . '/database/seed.sql';
 
 // Create database directory if needed
-if (!is_dir($basePath . '/database')) {
-    mkdir($basePath . '/database', 0777, true);
+if (!is_dir('/tmp')) {
+    mkdir('/tmp', 0777, true);
 }
 
 // Ensure database directory is writable
-@chmod($basePath . '/database', 0777);
+@chmod('/tmp', 0777);
 
 // Create storage directories
 $dirs = [
