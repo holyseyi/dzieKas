@@ -28,6 +28,11 @@ App\Core\Autoloader::register();
 // Start session
 App\Helpers\Session::start();
 
+// Sync dark mode cookie to session
+if (!App\Helpers\Session::has('dark_mode') && isset($_COOKIE['dark_mode'])) {
+    App\Helpers\Session::set('dark_mode', $_COOKIE['dark_mode'] === '1');
+}
+
 // Global view helper functions (e(), img(), content_url(), ...)
 require dirname(__DIR__) . '/app/helpers/view_functions.php';
 
