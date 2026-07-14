@@ -18,7 +18,7 @@ class AdminMiddleware
     {
         $user = Session::get('user');
 
-        if (!$user || !in_array($user['role'] ?? '', ['admin', 'super_admin', 'editor'], true)) {
+        if (!$user || !in_array($user['role_slug'] ?? ($user['role'] ?? ''), ['super_admin', 'admin', 'editor', 'Super Admin', 'Admin', 'Editor'], true)) {
             http_response_code(403);
             echo 'Access denied.';
             exit;
