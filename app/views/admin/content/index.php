@@ -1,6 +1,9 @@
 <?php /** @var array<int,array<string,mixed>> $items */ ?>
 <div class="admin-toolbar">
-    <a class="btn btn--primary" href="/admin/content/create">+ Add Content</a>
+    <div>
+        <a class="btn btn--primary" href="/admin/content/create">+ Add Content</a>
+        <a class="btn btn--ghost" href="/admin/media">📁 Media Library</a>
+    </div>
     <form class="admin-search" action="/admin/content" method="get">
         <input type="text" name="search" class="field__input" placeholder="Search content..." value="<?= e($search ?? '') ?>">
         <select name="type" class="field__input">

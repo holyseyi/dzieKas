@@ -156,6 +156,30 @@ class MediaController extends Controller
         $this->redirect('/admin/media?folder_id=' . $file['folder_id']);
     }
 
+    public function videos(): void
+    {
+        $db = Database::getInstance();
+        $videos = $db->fetchAll(
+            "SELECT mf.*, mf2.name as folder_name FROM media_files mf
+             JOIN media_folders mf2 ON mf.folder_id = mf2.id
+             WHERE mf.mime_type LIKE 'video/%'
+             ORDER BY mf.created_at DESC"
+        );
+
+        header('Content-Type: application/json');
+        echo json_encode(array_map(function ($v) {
+            return [
+                'id' => (int) $v['id'],
+                'original_name' => $v['original_name'],
+                'path' => $v['path'],
+                'url' => rtrim($this->config['url'], '/') . '/storage/' . ltrim($v['path'], '/'),
+                'folder_name' => $v['folder_name'],
+                'file_size' => $this->formatBytes((int) $v['file_size']),
+            ];
+        }, $videos));
+        exit;
+    }
+
     private function getBreadcrumbs(Database $db, int $folderId): array
     {
         $breadcrumbs = [];

@@ -136,3 +136,19 @@ if (!function_exists('time_ago')) {
         return 'just now';
     }
 }
+
+if (!function_exists('format_bytes')) {
+    /**
+     * Format bytes to human-readable size.
+     */
+    function format_bytes(int $bytes): string
+    {
+        $units = ['B', 'KB', 'MB', 'GB'];
+        $i = 0;
+        while ($bytes >= 1024 && $i < count($units) - 1) {
+            $bytes /= 1024;
+            $i++;
+        }
+        return round($bytes, 2) . ' ' . $units[$i];
+    }
+}

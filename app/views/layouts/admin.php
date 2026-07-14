@@ -63,6 +63,7 @@ $nav = [
         <button class="icon-btn" data-admin-toggle aria-label="Toggle sidebar">☰</button>
         <h1 class="admin-topbar__title"><?= e($pageTitle) ?></h1>
         <div class="admin-topbar__actions">
+            <a class="btn btn--ghost" href="/admin/media" target="_blank" rel="noopener">📁 Media Library</a>
             <form action="/toggle-dark-mode" method="post" class="inline-form">
                 <input type="hidden" name="_csrf_token" value="<?= e($csrf_token ?? '') ?>">
                 <button type="submit" class="icon-btn" title="Toggle theme"><?= $dark ? '☀' : '☾' ?></button>

@@ -67,6 +67,7 @@ class ContentController extends Controller
             'languages' => $db->fetchAll('SELECT * FROM languages WHERE is_active = 1 ORDER BY name'),
             'actors' => $db->fetchAll('SELECT * FROM actors WHERE is_active = 1 ORDER BY name'),
             'directors' => $db->fetchAll('SELECT * FROM directors WHERE is_active = 1 ORDER BY name'),
+            'mediaVideos' => $db->fetchAll("SELECT mf.*, mf2.name as folder_name FROM media_files mf JOIN media_folders mf2 ON mf.folder_id = mf2.id WHERE mf.mime_type LIKE 'video/%' ORDER BY mf.created_at DESC"),
         ], 'layouts/admin');
     }
 
@@ -119,6 +120,12 @@ class ContentController extends Controller
             if ($video) {
                 $data['video_path'] = $video;
                 $data['video_type'] = 'upload';
+            }
+        } elseif ($this->input('media_video_id')) {
+            $mediaVideo = $db->fetchOne('SELECT * FROM media_files WHERE id = ?', [(int) $this->input('media_video_id')]);
+            if ($mediaVideo) {
+                $data['video_path'] = $mediaVideo['path'];
+                $data['video_type'] = 'media';
             }
         }
 
@@ -198,6 +205,7 @@ class ContentController extends Controller
             'languages' => $db->fetchAll('SELECT * FROM languages WHERE is_active = 1 ORDER BY name'),
             'actors' => $db->fetchAll('SELECT * FROM actors WHERE is_active = 1 ORDER BY name'),
             'directors' => $db->fetchAll('SELECT * FROM directors WHERE is_active = 1 ORDER BY name'),
+            'mediaVideos' => $db->fetchAll("SELECT mf.*, mf2.name as folder_name FROM media_files mf JOIN media_folders mf2 ON mf.folder_id = mf2.id WHERE mf.mime_type LIKE 'video/%' ORDER BY mf.created_at DESC"),
         ], 'layouts/admin');
     }
 
@@ -244,6 +252,12 @@ class ContentController extends Controller
             $video = Video::upload($_FILES['video_file'], 'videos');
             if ($video) {
                 $data['video_path'] = $video;
+            }
+        } elseif ($this->input('media_video_id')) {
+            $mediaVideo = $db->fetchOne('SELECT * FROM media_files WHERE id = ?', [(int) $this->input('media_video_id')]);
+            if ($mediaVideo) {
+                $data['video_path'] = $mediaVideo['path'];
+                $data['video_type'] = 'media';
             }
         } elseif ($this->input('remove_video')) {
             $data['video_path'] = null;

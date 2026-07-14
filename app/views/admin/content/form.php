@@ -91,6 +91,18 @@
                         <?php endif; ?>
                     </div>
                     <div class="field">
+                        <label class="field__label">Or Select from Media Library</label>
+                        <select name="media_video_id" class="field__input">
+                            <option value="">-- Select a video --</option>
+                            <?php foreach ($mediaVideos as $mv): ?>
+                                <option value="<?= (int) $mv['id'] ?>" <?= (!empty($content['video_path']) && $content['video_path'] === $mv['path']) ? 'selected' : '' ?>>
+                                    <?= e($mv['original_name']) ?> (<?= e(format_bytes((int) $mv['file_size'])) ?>)
+                                </option>
+                            <?php endforeach; ?>
+                        </select>
+                        <a class="link" href="/admin/media" target="_blank" rel="noopener">Open Media Library ↗</a>
+                    </div>
+                    <div class="field">
                         <label class="field__label">Trailer URL (YouTube, etc.)</label>
                         <input type="url" name="trailer_url" class="field__input" value="<?= e($content['trailer_url'] ?? '') ?>">
                     </div>

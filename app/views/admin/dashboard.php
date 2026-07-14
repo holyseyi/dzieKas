@@ -1,5 +1,9 @@
 <?php /** @var array<string,mixed> $stats */ ?>
 <div class="dashboard">
+    <div class="dashboard__actions" style="margin-bottom:1.5rem">
+        <a class="btn btn--primary" href="/admin/media">📁 Media Library</a>
+        <a class="btn btn--ghost" href="/admin/content/create">+ Add Content</a>
+    </div>
     <div class="stats-grid">
         <?php foreach ($stats as $label => $value): ?>
             <div class="stat-card">
