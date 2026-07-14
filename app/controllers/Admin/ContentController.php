@@ -213,6 +213,7 @@ class ContentController extends Controller
     {
         $this->validateCsrf();
         $user = Session::get('user');
+        $db = Database::getInstance();
         $contentModel = new Content();
         $content = $contentModel->find((int) $id);
 
@@ -252,6 +253,7 @@ class ContentController extends Controller
             $video = Video::upload($_FILES['video_file'], 'videos');
             if ($video) {
                 $data['video_path'] = $video;
+                $data['video_type'] = 'upload';
             }
         } elseif ($this->input('media_video_id')) {
             $mediaVideo = $db->fetchOne('SELECT * FROM media_files WHERE id = ?', [(int) $this->input('media_video_id')]);
@@ -261,6 +263,7 @@ class ContentController extends Controller
             }
         } elseif ($this->input('remove_video')) {
             $data['video_path'] = null;
+            $data['video_type'] = 'external';
         }
 
         $contentModel->update((int) $id, $data);
