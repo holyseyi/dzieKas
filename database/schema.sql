@@ -517,14 +517,39 @@ CREATE INDEX idx_audit_logs_created ON audit_logs(created_at);
 
 -- Homepage Sections Config
 CREATE TABLE IF NOT EXISTS homepage_sections (
+     id INTEGER PRIMARY KEY AUTOINCREMENT,
+     name VARCHAR(100) NOT NULL,
+     slug VARCHAR(100) NOT NULL UNIQUE,
+     title VARCHAR(255),
+     query_type VARCHAR(50) NOT NULL,
+     query_params TEXT,
+     limit_count INTEGER DEFAULT 12,
+     sort_order INTEGER DEFAULT 0,
+     is_active INTEGER DEFAULT 1,
+     created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+ );
+
+-- Media Library
+CREATE TABLE IF NOT EXISTS media_folders (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
-    name VARCHAR(100) NOT NULL,
-    slug VARCHAR(100) NOT NULL UNIQUE,
-    title VARCHAR(255),
-    query_type VARCHAR(50) NOT NULL,
-    query_params TEXT,
-    limit_count INTEGER DEFAULT 12,
-    sort_order INTEGER DEFAULT 0,
-    is_active INTEGER DEFAULT 1,
-    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+    name VARCHAR(255) NOT NULL,
+    parent_id INTEGER DEFAULT NULL,
+    path VARCHAR(1000) NOT NULL,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (parent_id) REFERENCES media_folders(id) ON DELETE CASCADE
 );
+
+CREATE TABLE IF NOT EXISTS media_files (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    folder_id INTEGER NOT NULL,
+    filename VARCHAR(255) NOT NULL,
+    original_name VARCHAR(500) NOT NULL,
+    mime_type VARCHAR(100),
+    file_size INTEGER DEFAULT 0,
+    path VARCHAR(1000) NOT NULL,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (folder_id) REFERENCES media_folders(id) ON DELETE CASCADE
+);
+
+CREATE INDEX idx_media_folders_parent ON media_folders(parent_id);
+CREATE INDEX idx_media_files_folder ON media_files(folder_id);

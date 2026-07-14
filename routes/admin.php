@@ -72,6 +72,13 @@ $router->get('/admin/seo', 'Admin\\SeoController@index', $adminMw);
 // Reports
 $router->get('/admin/reports', 'Admin\\ReportController@index', $adminMw);
 
+// Media Library
+$router->get('/admin/media', 'Admin\\MediaController@index', $adminMw);
+$router->post('/admin/media/folder', 'Admin\\MediaController@createFolder', $adminMw);
+$router->post('/admin/media/upload', 'Admin\\MediaController@upload', $adminMw);
+$router->post('/admin/media/folder/delete/{id}', 'Admin\\MediaController@deleteFolder', $adminMw);
+$router->post('/admin/media/file/delete/{id}', 'Admin\\MediaController@deleteFile', $adminMw);
+
 // Logs
 $router->get('/admin/logs', 'Admin\\LogController@index', $adminMw);
 

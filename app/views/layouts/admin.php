@@ -10,6 +10,7 @@ $nav = [
     ],
     'Catalog' => [
         '/admin/content' => ['Content', '🎬'],
+        '/admin/media' => ['Media Library', '📁'],
         '/admin/featured' => ['Featured', '★'],
         '/admin/genres' => ['Genres', '☰'],
         '/admin/countries' => ['Countries', '⚑'],
