@@ -9,10 +9,19 @@
 
 <div class="table-wrap">
     <table class="table">
-        <thead><tr><th>Name</th><th>Slug</th></tr></thead>
+        <thead><tr><th>Name</th><th>Slug</th><th>Actions</th></tr></thead>
         <tbody>
             <?php foreach ($directors as $d): ?>
-                <tr><td><?= e($d['name']) ?></td><td><?= e($d['slug']) ?></td></tr>
+                <tr>
+                    <td><?= e($d['name']) ?></td>
+                    <td><?= e($d['slug']) ?></td>
+                    <td>
+                        <form action="/admin/directors/delete/<?= (int) $d['id'] ?>" method="post" class="inline-form" onsubmit="return confirm('Delete this director?')">
+                            <input type="hidden" name="_csrf_token" value="<?= e($csrf_token ?? '') ?>">
+                            <button type="submit" class="link link--danger">Delete</button>
+                        </form>
+                    </td>
+                </tr>
             <?php endforeach; ?>
         </tbody>
     </table>

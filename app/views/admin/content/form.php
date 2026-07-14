@@ -29,6 +29,31 @@
                         </select>
                     </div>
                     <div class="field">
+                        <label class="field__label">Genres</label>
+                        <select name="genres[]" class="field__input" multiple size="6">
+                            <?php foreach ($genres as $g): ?>
+                                <option value="<?= (int) $g['id'] ?>" <?= in_array((int) $g['id'], array_map('intval', array_column($content['genres'] ?? [], 'genre_id')), true) ? 'selected' : '' ?>><?= e($g['name']) ?></option>
+                            <?php endforeach; ?>
+                        </select>
+                        <span class="field__help">Hold Ctrl/Cmd to select multiple</span>
+                    </div>
+                    <div class="field">
+                        <label class="field__label">Actors</label>
+                        <select name="actors[]" class="field__input" multiple size="6">
+                            <?php foreach ($actors as $a): ?>
+                                <option value="<?= (int) $a['id'] ?>" <?= in_array((int) $a['id'], array_map('intval', array_column($content['actors'] ?? [], 'actor_id')), true) ? 'selected' : '' ?>><?= e($a['name']) ?></option>
+                            <?php endforeach; ?>
+                        </select>
+                    </div>
+                    <div class="field">
+                        <label class="field__label">Directors</label>
+                        <select name="directors[]" class="field__input" multiple size="6">
+                            <?php foreach ($directors as $d): ?>
+                                <option value="<?= (int) $d['id'] ?>" <?= in_array((int) $d['id'], array_map('intval', array_column($content['directors'] ?? [], 'director_id')), true) ? 'selected' : '' ?>><?= e($d['name']) ?></option>
+                            <?php endforeach; ?>
+                        </select>
+                    </div>
+                    <div class="field">
                         <label class="field__label">Description</label>
                         <textarea name="description" class="field__input" rows="3"><?= e($content['description'] ?? '') ?></textarea>
                     </div>

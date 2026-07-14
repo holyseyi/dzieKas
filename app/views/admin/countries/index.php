@@ -10,13 +10,19 @@
 
 <div class="table-wrap">
     <table class="table">
-        <thead><tr><th>Name</th><th>Slug</th><th>Code</th></tr></thead>
+        <thead><tr><th>Name</th><th>Slug</th><th>Code</th><th>Actions</th></tr></thead>
         <tbody>
             <?php foreach ($countries as $c): ?>
                 <tr>
                     <td><?= e($c['name']) ?></td>
                     <td><?= e($c['slug']) ?></td>
                     <td><?= e($c['code'] ?? '') ?></td>
+                    <td>
+                        <form action="/admin/countries/delete/<?= (int) $c['id'] ?>" method="post" class="inline-form" onsubmit="return confirm('Delete this country?')">
+                            <input type="hidden" name="_csrf_token" value="<?= e($csrf_token ?? '') ?>">
+                            <button type="submit" class="link link--danger">Delete</button>
+                        </form>
+                    </td>
                 </tr>
             <?php endforeach; ?>
         </tbody>

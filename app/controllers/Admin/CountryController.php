@@ -31,4 +31,12 @@ class CountryController extends Controller
         Session::flash('success', 'Country added.');
         $this->redirect('/admin/countries');
     }
+
+    public function destroy(string $id): void
+    {
+        $this->validateCsrf();
+        Database::getInstance()->delete('countries', 'id = ?', [$id]);
+        Session::flash('success', 'Country deleted.');
+        $this->redirect('/admin/countries');
+    }
 }

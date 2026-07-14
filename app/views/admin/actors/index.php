@@ -9,10 +9,19 @@
 
 <div class="table-wrap">
     <table class="table">
-        <thead><tr><th>Name</th><th>Slug</th></tr></thead>
+        <thead><tr><th>Name</th><th>Slug</th><th>Actions</th></tr></thead>
         <tbody>
             <?php foreach ($actors as $a): ?>
-                <tr><td><?= e($a['name']) ?></td><td><?= e($a['slug']) ?></td></tr>
+                <tr>
+                    <td><?= e($a['name']) ?></td>
+                    <td><?= e($a['slug']) ?></td>
+                    <td>
+                        <form action="/admin/actors/delete/<?= (int) $a['id'] ?>" method="post" class="inline-form" onsubmit="return confirm('Delete this actor?')">
+                            <input type="hidden" name="_csrf_token" value="<?= e($csrf_token ?? '') ?>">
+                            <button type="submit" class="link link--danger">Delete</button>
+                        </form>
+                    </td>
+                </tr>
             <?php endforeach; ?>
         </tbody>
     </table>

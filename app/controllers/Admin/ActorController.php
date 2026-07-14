@@ -27,4 +27,12 @@ class ActorController extends Controller
         Session::flash('success', 'Actor added.');
         $this->redirect('/admin/actors');
     }
+
+    public function destroy(string $id): void
+    {
+        $this->validateCsrf();
+        Database::getInstance()->delete('actors', 'id = ?', [$id]);
+        Session::flash('success', 'Actor deleted.');
+        $this->redirect('/admin/actors');
+    }
 }

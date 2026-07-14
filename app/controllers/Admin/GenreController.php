@@ -27,4 +27,12 @@ class GenreController extends Controller
         Session::flash('success', 'Genre added.');
         $this->redirect('/admin/genres');
     }
+
+    public function destroy(string $id): void
+    {
+        $this->validateCsrf();
+        Database::getInstance()->delete('genres', 'id = ?', [$id]);
+        Session::flash('success', 'Genre deleted.');
+        $this->redirect('/admin/genres');
+    }
 }

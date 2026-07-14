@@ -32,12 +32,16 @@ $router->post('/admin/episodes/delete/{id}', 'Admin\\EpisodeController@delete', 
 // Taxonomy
 $router->get('/admin/genres', 'Admin\\GenreController@index', $adminMw);
 $router->post('/admin/genres/store', 'Admin\\GenreController@store', $adminMw);
+$router->post('/admin/genres/delete/{id}', 'Admin\\GenreController@destroy', $adminMw);
 $router->get('/admin/countries', 'Admin\\CountryController@index', $adminMw);
 $router->post('/admin/countries/store', 'Admin\\CountryController@store', $adminMw);
+$router->post('/admin/countries/delete/{id}', 'Admin\\CountryController@destroy', $adminMw);
 $router->get('/admin/actors', 'Admin\\ActorController@index', $adminMw);
 $router->post('/admin/actors/store', 'Admin\\ActorController@store', $adminMw);
+$router->post('/admin/actors/delete/{id}', 'Admin\\ActorController@destroy', $adminMw);
 $router->get('/admin/directors', 'Admin\\DirectorController@index', $adminMw);
 $router->post('/admin/directors/store', 'Admin\\DirectorController@store', $adminMw);
+$router->post('/admin/directors/delete/{id}', 'Admin\\DirectorController@destroy', $adminMw);
 
 // Users
 $router->get('/admin/users', 'Admin\\UserController@index', $adminMw);
@@ -56,6 +60,7 @@ $router->post('/admin/ads/delete/{id}', 'Admin\\AdController@delete', $adminMw);
 // Featured
 $router->get('/admin/featured', 'Admin\\FeaturedController@index', $adminMw);
 $router->post('/admin/featured/store', 'Admin\\FeaturedController@store', $adminMw);
+$router->post('/admin/featured/delete/{id}', 'Admin\\FeaturedController@destroy', $adminMw);
 
 // Settings
 $router->get('/admin/settings', 'Admin\\SettingController@index', $adminMw);

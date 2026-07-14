@@ -251,6 +251,33 @@ class ContentController extends Controller
 
         $contentModel->update((int) $id, $data);
 
+        // Sync genres
+        $db->delete('content_genres', 'content_id = ?', [$id]);
+        $genreIds = $this->input('genres', []);
+        if (is_array($genreIds)) {
+            foreach ($genreIds as $genreId) {
+                $db->insert('content_genres', ['content_id' => (int) $id, 'genre_id' => (int) $genreId]);
+            }
+        }
+
+        // Sync actors
+        $db->delete('content_actors', 'content_id = ?', [$id]);
+        $actorIds = $this->input('actors', []);
+        if (is_array($actorIds)) {
+            foreach ($actorIds as $actorId) {
+                $db->insert('content_actors', ['content_id' => (int) $id, 'actor_id' => (int) $actorId]);
+            }
+        }
+
+        // Sync directors
+        $db->delete('content_directors', 'content_id = ?', [$id]);
+        $directorIds = $this->input('directors', []);
+        if (is_array($directorIds)) {
+            foreach ($directorIds as $directorId) {
+                $db->insert('content_directors', ['content_id' => (int) $id, 'director_id' => (int) $directorId]);
+            }
+        }
+
         $auditLog = new AuditLog();
         $auditLog->log((int) $user['id'], 'update_content', 'content', (int) $id, $content, $data);
 

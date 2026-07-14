@@ -31,4 +31,12 @@ class FeaturedController extends Controller
         Session::flash('success', 'Featured content added.');
         $this->redirect('/admin/featured');
     }
+
+    public function destroy(string $id): void
+    {
+        $this->validateCsrf();
+        Database::getInstance()->delete('featured_content', 'id = ?', [$id]);
+        Session::flash('success', 'Featured content removed.');
+        $this->redirect('/admin/featured');
+    }
 }

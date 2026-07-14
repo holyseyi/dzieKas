@@ -27,4 +27,12 @@ class DirectorController extends Controller
         Session::flash('success', 'Director added.');
         $this->redirect('/admin/directors');
     }
+
+    public function destroy(string $id): void
+    {
+        $this->validateCsrf();
+        Database::getInstance()->delete('directors', 'id = ?', [$id]);
+        Session::flash('success', 'Director deleted.');
+        $this->redirect('/admin/directors');
+    }
 }

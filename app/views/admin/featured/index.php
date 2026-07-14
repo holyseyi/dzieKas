@@ -16,16 +16,22 @@
 
 <div class="table-wrap">
     <table class="table">
-        <thead><tr><th>Content</th><th>Section</th><th>Sort</th></tr></thead>
+        <thead><tr><th>Content</th><th>Section</th><th>Sort</th><th>Actions</th></tr></thead>
         <tbody>
             <?php foreach ($featured as $f): ?>
                 <tr>
                     <td><?= e($f['title']) ?></td>
                     <td><?= e($f['section']) ?></td>
                     <td><?= (int) $f['sort_order'] ?></td>
+                    <td>
+                        <form action="/admin/featured/delete/<?= (int) $f['id'] ?>" method="post" class="inline-form" onsubmit="return confirm('Remove from featured?')">
+                            <input type="hidden" name="_csrf_token" value="<?= e($csrf_token ?? '') ?>">
+                            <button type="submit" class="link link--danger">Remove</button>
+                        </form>
+                    </td>
                 </tr>
             <?php endforeach; ?>
-            <?php if (empty($featured)): ?><tr><td colspan="3" class="muted">No featured content.</td></tr><?php endif; ?>
+            <?php if (empty($featured)): ?><tr><td colspan="4" class="muted">No featured content.</td></tr><?php endif; ?>
         </tbody>
     </table>
 </div>
