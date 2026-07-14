@@ -80,6 +80,7 @@ $storageDirs = [
     dirname(__DIR__) . '/public/storage/uploads/subtitles',
     dirname(__DIR__) . '/public/storage/uploads/avatars',
     dirname(__DIR__) . '/public/storage/uploads/videos',
+    dirname(__DIR__) . '/public/storage/media',
     dirname(__DIR__) . '/storage/cache',
     dirname(__DIR__) . '/storage/logs',
     dirname(__DIR__) . '/storage/backups',
