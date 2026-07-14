@@ -73,13 +73,13 @@ if (!file_exists($dbPath)) {
 
 // Ensure storage directories exist
 $storageDirs = [
-    dirname(__DIR__) . '/storage/uploads/posters',
-    dirname(__DIR__) . '/storage/uploads/banners',
-    dirname(__DIR__) . '/storage/uploads/screenshots',
-    dirname(__DIR__) . '/storage/uploads/trailers',
-    dirname(__DIR__) . '/storage/uploads/subtitles',
-    dirname(__DIR__) . '/storage/uploads/avatars',
-    dirname(__DIR__) . '/storage/uploads/videos',
+    dirname(__DIR__) . '/public/storage/uploads/posters',
+    dirname(__DIR__) . '/public/storage/uploads/banners',
+    dirname(__DIR__) . '/public/storage/uploads/screenshots',
+    dirname(__DIR__) . '/public/storage/uploads/trailers',
+    dirname(__DIR__) . '/public/storage/uploads/subtitles',
+    dirname(__DIR__) . '/public/storage/uploads/avatars',
+    dirname(__DIR__) . '/public/storage/uploads/videos',
     dirname(__DIR__) . '/storage/cache',
     dirname(__DIR__) . '/storage/logs',
     dirname(__DIR__) . '/storage/backups',
@@ -91,11 +91,11 @@ foreach ($storageDirs as $dir) {
     }
 }
 
-// Ensure public/storage symlink exists
+// Ensure public/storage directory exists
 $publicStorage = dirname(__DIR__) . '/public/storage';
-$storageUploads = dirname(__DIR__) . '/storage/uploads';
-if (!file_exists($publicStorage)) {
-    @symlink($storageUploads, $publicStorage);
+if (!is_dir($publicStorage)) {
+    @mkdir($publicStorage, 0777, true);
+    @chmod($publicStorage, 0777);
 }
 
 // Gzip compression

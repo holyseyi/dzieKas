@@ -45,7 +45,7 @@ class Video
         };
 
         $filename = Security::generateToken(16) . '.' . $extension;
-        $uploadDir = dirname(__DIR__, 2) . '/storage/uploads/' . $directory;
+        $uploadDir = dirname(__DIR__, 2) . '/public/storage/uploads/' . $directory;
 
         if (!is_dir($uploadDir)) {
             mkdir($uploadDir, 0755, true);

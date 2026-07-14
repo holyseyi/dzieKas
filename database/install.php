@@ -28,13 +28,13 @@ if (!is_dir('/tmp')) {
 
 // Create storage directories
 $dirs = [
-    'storage/uploads/posters',
-    'storage/uploads/banners',
-    'storage/uploads/screenshots',
-    'storage/uploads/trailers',
-    'storage/uploads/subtitles',
-    'storage/uploads/avatars',
-    'storage/uploads/videos',
+    'public/storage/uploads/posters',
+    'public/storage/uploads/banners',
+    'public/storage/uploads/screenshots',
+    'public/storage/uploads/trailers',
+    'public/storage/uploads/subtitles',
+    'public/storage/uploads/avatars',
+    'public/storage/uploads/videos',
     'storage/cache',
     'storage/logs',
     'storage/backups',
@@ -90,18 +90,6 @@ $stmt->execute([$username, $email, $hashedPassword, ucfirst($username)]);
 echo "\nAdmin user created successfully!\n";
 echo "Username: {$username}\n";
 echo "Email: {$email}\n";
-
-// Create symlink for uploads in public
-$publicStorage = $basePath . '/public/storage';
-$storageUploads = $basePath . '/storage/uploads';
-if (!file_exists($publicStorage)) {
-    if (PHP_OS_FAMILY !== 'Windows') {
-        symlink($storageUploads, $publicStorage);
-        echo "\nSymlink created: public/storage -> storage/uploads\n";
-    } else {
-        echo "\nNote: On Windows, manually copy or symlink storage/uploads to public/storage\n";
-    }
-}
 
 echo "\n=== Installation Complete! ===\n";
 echo "Access the site at: http://localhost/dzieKas/public\n";
