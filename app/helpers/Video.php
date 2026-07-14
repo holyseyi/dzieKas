@@ -54,10 +54,31 @@ class Video
         $destination = $uploadDir . '/' . $filename;
 
         if (move_uploaded_file($file['tmp_name'], $destination)) {
+            self::generateThumbnail($destination, $uploadDir . '/' . pathinfo($filename, PATHINFO_FILENAME) . '.jpg');
             return $directory . '/' . $filename;
         }
 
         return false;
+    }
+
+    /**
+     * Generate a video thumbnail using ffmpeg.
+     */
+    private static function generateThumbnail(string $videoPath, string $thumbnailPath): bool
+    {
+        if (!file_exists($videoPath)) {
+            return false;
+        }
+
+        $cmd = sprintf(
+            'ffmpeg -y -i %s -ss 00:00:01 -vframes 1 -q:v 2 %s 2>/dev/null',
+            escapeshellarg($videoPath),
+            escapeshellarg($thumbnailPath)
+        );
+
+        exec($cmd, $output, $returnCode);
+
+        return $returnCode === 0 && file_exists($thumbnailPath);
     }
 
     /**

@@ -209,6 +209,8 @@ CREATE TABLE IF NOT EXISTS episodes (
     runtime INTEGER,
     air_date DATE,
     view_count INTEGER DEFAULT 0,
+    video_path VARCHAR(255),
+    video_type VARCHAR(20) DEFAULT 'upload',
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (content_id) REFERENCES content(id) ON DELETE CASCADE,
@@ -547,6 +549,7 @@ CREATE TABLE IF NOT EXISTS media_files (
     mime_type VARCHAR(100),
     file_size INTEGER DEFAULT 0,
     path VARCHAR(1000) NOT NULL,
+    thumbnail_path VARCHAR(1000),
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (folder_id) REFERENCES media_folders(id) ON DELETE CASCADE
 );

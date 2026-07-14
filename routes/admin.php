@@ -78,6 +78,7 @@ $router->post('/admin/media/folder', 'Admin\\MediaController@createFolder', $adm
 $router->post('/admin/media/upload', 'Admin\\MediaController@upload', $adminMw);
 $router->post('/admin/media/folder/delete/{id}', 'Admin\\MediaController@deleteFolder', $adminMw);
 $router->post('/admin/media/file/delete/{id}', 'Admin\\MediaController@deleteFile', $adminMw);
+$router->post('/admin/media/file/move/{id}', 'Admin\\MediaController@moveFile', $adminMw);
 $router->get('/admin/media/videos.json', 'Admin\\MediaController@videos', $adminMw);
 
 // Logs

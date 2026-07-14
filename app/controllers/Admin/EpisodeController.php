@@ -9,6 +9,7 @@ use App\Core\Database;
 use App\Helpers\Security;
 use App\Helpers\Session;
 use App\Helpers\Slug;
+use App\Helpers\Video;
 
 class EpisodeController extends Controller
 {
@@ -20,7 +21,8 @@ class EpisodeController extends Controller
         foreach ($seasons as &$s) {
             $s['episodes'] = $db->fetchAll('SELECT * FROM episodes WHERE season_id = ? ORDER BY episode_number', [$s['id']]);
         }
-        $this->view('admin/episodes/index', ['title' => 'Episodes', 'content' => $content, 'seasons' => $seasons], 'layouts/admin');
+        $mediaVideos = $db->fetchAll("SELECT mf.*, mf2.name as folder_name FROM media_files mf JOIN media_folders mf2 ON mf.folder_id = mf2.id WHERE mf.mime_type LIKE 'video/%' ORDER BY mf.created_at DESC");
+        $this->view('admin/episodes/index', ['title' => 'Episodes', 'content' => $content, 'seasons' => $seasons, 'mediaVideos' => $mediaVideos], 'layouts/admin');
     }
 
     public function store(): void
@@ -40,7 +42,7 @@ class EpisodeController extends Controller
         $title = Security::sanitize((string) $this->input('title', ''));
         $epNum = (int) $this->input('episode_number', 1);
 
-        $db->insert('episodes', [
+        $data = [
             'content_id' => $contentId,
             'season_id' => $seasonId,
             'episode_number' => $epNum,
@@ -49,7 +51,23 @@ class EpisodeController extends Controller
             'description' => $this->input('description', ''),
             'runtime' => $this->input('runtime') ?: null,
             'air_date' => $this->input('air_date') ?: null,
-        ]);
+        ];
+
+        if (!empty($_FILES['episode_video']['name']) && $_FILES['episode_video']['error'] === UPLOAD_ERR_OK) {
+            $video = Video::upload($_FILES['episode_video'], 'videos');
+            if ($video) {
+                $data['video_path'] = $video;
+                $data['video_type'] = 'upload';
+            }
+        } elseif ($this->input('media_video_id')) {
+            $mediaVideo = $db->fetchOne('SELECT * FROM media_files WHERE id = ?', [(int) $this->input('media_video_id')]);
+            if ($mediaVideo) {
+                $data['video_path'] = $mediaVideo['path'];
+                $data['video_type'] = 'media';
+            }
+        }
+
+        $db->insert('episodes', $data);
 
         Session::flash('success', 'Episode added.');
         $this->redirect('/admin/episodes/' . $contentId);

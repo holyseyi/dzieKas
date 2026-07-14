@@ -29,7 +29,19 @@ class MediaController extends Controller
         }
 
         $folders = $db->fetchAll('SELECT * FROM media_folders WHERE parent_id = ? ORDER BY name', [$folder['id']]);
-        $files = $db->fetchAll('SELECT * FROM media_files WHERE folder_id = ? ORDER BY original_name', [$folder['id']]);
+
+        $search = $this->query('q', '');
+        $fileQuery = 'SELECT * FROM media_files WHERE folder_id = ?';
+        $fileParams = [$folder['id']];
+        if ($search) {
+            $fileQuery .= ' AND original_name LIKE ?';
+            $fileParams[] = '%' . $search . '%';
+        }
+        $fileQuery .= ' ORDER BY original_name';
+        $files = $db->fetchAll($fileQuery, $fileParams);
+
+        $allFolders = $db->fetchAll('SELECT * FROM media_folders ORDER BY name');
+
         $breadcrumbs = $this->getBreadcrumbs($db, (int) $folder['id']);
 
         $this->view('admin/media/index', [
@@ -38,6 +50,8 @@ class MediaController extends Controller
             'folders' => $folders,
             'files' => $files,
             'breadcrumbs' => $breadcrumbs,
+            'allFolders' => $allFolders,
+            'search' => $search,
         ], 'layouts/admin');
     }
 
@@ -79,41 +93,75 @@ class MediaController extends Controller
         $db = Database::getInstance();
         $folderId = (int) $this->input('folder_id', 0);
 
-        if (empty($_FILES['file']['name']) || $_FILES['file']['error'] !== UPLOAD_ERR_OK) {
-            Session::flash('error', 'Please select a file to upload.');
-            $this->redirect('/admin/media?folder_id=' . $folderId);
-        }
-
         $folder = $db->fetchOne('SELECT * FROM media_folders WHERE id = ?', [$folderId]);
         if (!$folder) {
             Session::flash('error', 'Invalid folder.');
             $this->redirect('/admin/media');
         }
 
-        $file = $_FILES['file'];
-        $finfo = new \finfo(FILEINFO_MIME_TYPE);
-        $mimeType = $finfo->file($file['tmp_name']);
-
-        $extension = pathinfo($file['name'], PATHINFO_EXTENSION);
-        $filename = Security::generateToken(16) . '.' . $extension;
         $uploadDir = dirname(__DIR__, 3) . '/public/storage/media' . $folder['path'];
         if (!is_dir($uploadDir)) {
             mkdir($uploadDir, 0777, true);
         }
 
-        $destination = $uploadDir . '/' . $filename;
-        if (move_uploaded_file($file['tmp_name'], $destination)) {
-            $db->insert('media_files', [
-                'folder_id' => $folderId,
-                'filename' => $filename,
-                'original_name' => Security::sanitize($file['name']),
-                'mime_type' => $mimeType,
-                'file_size' => (int) $file['size'],
-                'path' => rtrim($folder['path'], '/') . '/' . $filename,
-            ]);
-            Session::flash('success', 'File uploaded successfully.');
+        $files = $_FILES['files'] ?? null;
+        if (!$files || empty($files['name'][0])) {
+            Session::flash('error', 'Please select files to upload.');
+            $this->redirect('/admin/media?folder_id=' . $folderId);
+        }
+
+        $uploaded = 0;
+        $failed = 0;
+
+        foreach ($files['name'] as $index => $name) {
+            if ($files['error'][$index] !== UPLOAD_ERR_OK) {
+                $failed++;
+                continue;
+            }
+
+            $file = [
+                'name' => $name,
+                'type' => $files['type'][$index],
+                'tmp_name' => $files['tmp_name'][$index],
+                'error' => $files['error'][$index],
+                'size' => $files['size'][$index],
+            ];
+
+            $finfo = new \finfo(FILEINFO_MIME_TYPE);
+            $mimeType = $finfo->file($file['tmp_name']);
+            $extension = pathinfo($file['name'], PATHINFO_EXTENSION);
+            $filename = Security::generateToken(16) . '.' . $extension;
+            $destination = $uploadDir . '/' . $filename;
+            $thumbnailPath = null;
+
+            if (move_uploaded_file($file['tmp_name'], $destination)) {
+                if (str_starts_with((string) $mimeType, 'video/')) {
+                    $thumbnailFilename = pathinfo($filename, PATHINFO_FILENAME) . '.jpg';
+                    $thumbnailFullPath = $uploadDir . '/' . $thumbnailFilename;
+                    $this->generateThumbnail($destination, $thumbnailFullPath);
+                    if (file_exists($thumbnailFullPath)) {
+                        $thumbnailPath = rtrim($folder['path'], '/') . '/' . $thumbnailFilename;
+                    }
+                }
+                $db->insert('media_files', [
+                    'folder_id' => $folderId,
+                    'filename' => $filename,
+                    'original_name' => Security::sanitize($file['name']),
+                    'mime_type' => $mimeType,
+                    'file_size' => (int) $file['size'],
+                    'path' => rtrim($folder['path'], '/') . '/' . $filename,
+                    'thumbnail_path' => $thumbnailPath,
+                ]);
+                $uploaded++;
+            } else {
+                $failed++;
+            }
+        }
+
+        if ($uploaded > 0) {
+            Session::flash('success', "{$uploaded} file(s) uploaded successfully." . ($failed > 0 ? " {$failed} failed." : ''));
         } else {
-            Session::flash('error', 'Failed to upload file.');
+            Session::flash('error', 'Failed to upload files.');
         }
 
         $this->redirect('/admin/media?folder_id=' . $folderId);
@@ -153,6 +201,48 @@ class MediaController extends Controller
 
         $db->delete('media_files', 'id = ?', [$id]);
         Session::flash('success', 'File deleted.');
+        $this->redirect('/admin/media?folder_id=' . $file['folder_id']);
+    }
+
+    public function moveFile(string $id): void
+    {
+        $this->validateCsrf();
+        $db = Database::getInstance();
+        $file = $db->fetchOne('SELECT * FROM media_files WHERE id = ?', [$id]);
+
+        if (!$file) {
+            Session::flash('error', 'File not found.');
+            $this->redirect('/admin/media');
+        }
+
+        $targetFolderId = (int) $this->input('target_folder_id', 0);
+        if (!$targetFolderId) {
+            Session::flash('error', 'Invalid target folder.');
+            $this->redirect('/admin/media?folder_id=' . $file['folder_id']);
+        }
+
+        $targetFolder = $db->fetchOne('SELECT * FROM media_folders WHERE id = ?', [$targetFolderId]);
+        if (!$targetFolder) {
+            Session::flash('error', 'Target folder not found.');
+            $this->redirect('/admin/media?folder_id=' . $file['folder_id']);
+        }
+
+        $sourcePath = dirname(__DIR__, 3) . '/public/storage/' . ltrim($file['path'], '/');
+        $newFilename = $file['filename'];
+        $targetDir = dirname(__DIR__, 3) . '/public/storage/media' . $targetFolder['path'];
+        if (!is_dir($targetDir)) {
+            mkdir($targetDir, 0777, true);
+        }
+        $targetPath = $targetDir . '/' . $newFilename;
+        $newRelativePath = rtrim($targetFolder['path'], '/') . '/' . $newFilename;
+
+        if (rename($sourcePath, $targetPath)) {
+            $db->update('media_files', ['folder_id' => $targetFolderId, 'path' => $newRelativePath], 'id = ?', [$id]);
+            Session::flash('success', 'File moved successfully.');
+        } else {
+            Session::flash('error', 'Failed to move file.');
+        }
+
         $this->redirect('/admin/media?folder_id=' . $file['folder_id']);
     }
 
@@ -203,5 +293,22 @@ class MediaController extends Controller
             $i++;
         }
         return round($bytes, 2) . ' ' . $units[$i];
+    }
+
+    private function generateThumbnail(string $videoPath, string $thumbnailPath): bool
+    {
+        if (!file_exists($videoPath)) {
+            return false;
+        }
+
+        $cmd = sprintf(
+            'ffmpeg -y -i %s -ss 00:00:01 -vframes 1 -q:v 2 %s 2>/dev/null',
+            escapeshellarg($videoPath),
+            escapeshellarg($thumbnailPath)
+        );
+
+        exec($cmd, $output, $returnCode);
+
+        return $returnCode === 0 && file_exists($thumbnailPath);
     }
 }
