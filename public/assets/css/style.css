@@ -314,6 +314,42 @@ p { margin: 0 0 1rem; }
 .error-page__title { font-size: 2rem; }
 .error-page__text { color: var(--muted); margin-bottom: 1.5rem; }
 
+/* Admin FAB - Floating Action Button for Admin quick access */
+.admin-fab {
+  position: fixed;
+  bottom: 2rem;
+  right: 2rem;
+  z-index: 999;
+}
+.admin-fab__btn {
+  display: flex;
+  align-items: center;
+  gap: .5rem;
+  background: var(--primary);
+  color: #fff;
+  border: none;
+  border-radius: 999px;
+  padding: .75rem 1.25rem;
+  font-weight: 600;
+  text-decoration: none;
+  box-shadow: var(--shadow);
+  transition: .2s ease;
+}
+.admin-fab__btn:hover {
+  background: var(--primary-600);
+  transform: scale(1.05);
+  box-shadow: 0 12px 35px rgba(225,29,72,.4);
+}
+.admin-fab__icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  font-size: 1.2rem;
+  font-weight: 700;
+}
+
 /* Responsive */
 @media (max-width: 960px) {
   .detail-body, .page__split { grid-template-columns: 1fr; }
@@ -329,4 +365,6 @@ p { margin: 0 0 1rem; }
   .detail-hero__inner { grid-template-columns: 1fr; }
   .detail-poster { max-width: 200px; }
   .site-footer__grid { grid-template-columns: 1fr; }
+  .admin-fab { bottom: 1.5rem; right: 1.5rem; }
+  .admin-fab__label { display: none; }
 }

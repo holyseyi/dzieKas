@@ -97,6 +97,15 @@ $currentPath = rtrim(parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH) ?: 
     <?= $content ?>
 </main>
 
+<?php if ($isAdmin): ?>
+    <div class="admin-fab" data-admin-fab>
+        <a href="/admin/content/create" class="admin-fab__btn" title="Add New Video">
+            <span class="admin-fab__icon">+</span>
+            <span class="admin-fab__label">Add Video</span>
+        </a>
+    </div>
+<?php endif; ?>
+
 <footer class="site-footer">
     <div class="container site-footer__grid">
         <div class="site-footer__col">
