@@ -275,7 +275,7 @@ class Content extends Model
                 )
                 ORDER BY c.view_count DESC LIMIT ?";
 
-        return $this->db->fetchAll($sql, array_fill(0, 8, $term) + [$limit]);
+        return $this->db->fetchAll($sql, [...array_fill(0, 8, $term), $limit]);
     }
 
     /**
