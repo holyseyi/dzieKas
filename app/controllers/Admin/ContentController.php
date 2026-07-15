@@ -58,9 +58,34 @@ class ContentController extends Controller
     public function create(): void
     {
         $db = Database::getInstance();
+        
+        // Get pre-selection parameters from URL
+        $genreId = $this->query('genre_id');
+        $countryId = $this->query('country_id');
+        $actorId = $this->query('actor_id');
+        $directorId = $this->query('director_id');
+        
+        // Build default content with pre-selected values
+        $content = null;
+        if ($genreId || $countryId || $actorId || $directorId) {
+            $content = [];
+            if ($genreId) {
+                $content['genres'] = [['genre_id' => (int) $genreId]];
+            }
+            if ($countryId) {
+                $content['country_id'] = (int) $countryId;
+            }
+            if ($actorId) {
+                $content['actors'] = [['actor_id' => (int) $actorId]];
+            }
+            if ($directorId) {
+                $content['directors'] = [['director_id' => (int) $directorId]];
+            }
+        }
+        
         $this->view('admin/content/form', [
             'title' => 'Add Content',
-            'content' => null,
+            'content' => $content,
             'categories' => $db->fetchAll('SELECT * FROM categories WHERE is_active = 1 ORDER BY name'),
             'genres' => $db->fetchAll('SELECT * FROM genres WHERE is_active = 1 ORDER BY name'),
             'countries' => $db->fetchAll('SELECT * FROM countries WHERE is_active = 1 ORDER BY name'),
@@ -98,6 +123,7 @@ class ContentController extends Controller
             'status' => Security::sanitize((string) $this->input('status', 'draft')),
             'is_featured' => $this->input('is_featured') ? 1 : 0,
             'trailer_url' => Security::sanitize((string) $this->input('trailer_url', '')),
+            'video_type' => 'upload',
             'published_at' => $this->input('status') === 'published' ? date('Y-m-d H:i:s') : null,
         ];
 
@@ -230,6 +256,7 @@ class ContentController extends Controller
             'original_title' => Security::sanitize((string) $this->input('original_title', '')),
             'slug' => Slug::unique($title, 'content', (int) $id),
             'description' => $this->input('description', ''),
+            'synopsis' => $this->input('synopsis', ''),
             'runtime' => $this->input('runtime') ?: null,
             'release_date' => $this->input('release_date') ?: null,
             'release_year' => $this->input('release_year') ?: null,

@@ -5,6 +5,7 @@
         <input type="text" name="name" class="field__input" placeholder="Director name" required>
         <button type="submit" class="btn btn--primary">Add</button>
     </form>
+    <a class="btn btn--ghost" href="/admin/content/create">+ Add Content</a>
 </div>
 
 <div class="table-wrap">
@@ -16,6 +17,7 @@
                     <td><?= e($d['name']) ?></td>
                     <td><?= e($d['slug']) ?></td>
                     <td>
+                        <a class="link" href="/admin/content/create?director_id=<?= (int) $d['id'] ?>">Add Content</a>
                         <form action="/admin/directors/delete/<?= (int) $d['id'] ?>" method="post" class="inline-form" onsubmit="return confirm('Delete this director?')">
                             <input type="hidden" name="_csrf_token" value="<?= e($csrf_token ?? '') ?>">
                             <button type="submit" class="link link--danger">Delete</button>

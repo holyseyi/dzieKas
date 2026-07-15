@@ -44,12 +44,32 @@
                                 <option value="<?= (int) $a['id'] ?>" <?= in_array((int) $a['id'], array_map('intval', array_column($content['actors'] ?? [], 'actor_id')), true) ? 'selected' : '' ?>><?= e($a['name']) ?></option>
                             <?php endforeach; ?>
                         </select>
+                        <span class="field__help">Hold Ctrl/Cmd to select multiple</span>
                     </div>
                     <div class="field">
                         <label class="field__label">Directors</label>
                         <select name="directors[]" class="field__input" multiple size="6">
                             <?php foreach ($directors as $d): ?>
                                 <option value="<?= (int) $d['id'] ?>" <?= in_array((int) $d['id'], array_map('intval', array_column($content['directors'] ?? [], 'director_id')), true) ? 'selected' : '' ?>><?= e($d['name']) ?></option>
+                            <?php endforeach; ?>
+                        </select>
+                        <span class="field__help">Hold Ctrl/Cmd to select multiple</span>
+                    </div>
+                    <div class="field">
+                        <label class="field__label">Country</label>
+                        <select name="country_id" class="field__input">
+                            <option value="">-- Select Country --</option>
+                            <?php foreach ($countries as $c): ?>
+                                <option value="<?= (int) $c['id'] ?>" <?= (int) ($content['country_id'] ?? 0) === (int) $c['id'] ? 'selected' : '' ?>><?= e($c['name']) ?></option>
+                            <?php endforeach; ?>
+                        </select>
+                    </div>
+                    <div class="field">
+                        <label class="field__label">Language</label>
+                        <select name="language_id" class="field__input">
+                            <option value="">-- Select Language --</option>
+                            <?php foreach ($languages as $l): ?>
+                                <option value="<?= (int) $l['id'] ?>" <?= (int) ($content['language_id'] ?? 0) === (int) $l['id'] ? 'selected' : '' ?>><?= e($l['name']) ?></option>
                             <?php endforeach; ?>
                         </select>
                     </div>
