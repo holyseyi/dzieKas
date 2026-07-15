@@ -70,6 +70,20 @@ class Video
             return false;
         }
 
+        // Check if exec() is available
+        $disabled = explode(',', ini_get('disable_functions'));
+        if (in_array('exec', $disabled, true)) {
+            error_log('Video::generateThumbnail: exec() is disabled on this server');
+            return false;
+        }
+
+        // Check if ffmpeg is installed
+        exec('which ffmpeg 2>/dev/null', $whichOutput, $whichReturnCode);
+        if ($whichReturnCode !== 0) {
+            error_log('Video::generateThumbnail: ffmpeg is not installed on this server');
+            return false;
+        }
+
         $cmd = sprintf(
             'ffmpeg -y -i %s -ss 00:00:01 -vframes 1 -q:v 2 %s 2>/dev/null',
             escapeshellarg($videoPath),
