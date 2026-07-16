@@ -37,7 +37,19 @@ class SearchController extends Controller
                 'type' => $item['type'],
                 'year' => $item['release_year'],
                 'poster' => \App\Helpers\Image::url($item['poster'] ?? null),
+                'url' => $this->getContentUrl($item),
             ], $results),
         ]);
+    }
+
+    /**
+     * @param array<string, mixed> $item
+     */
+    private function getContentUrl(array $item): string
+    {
+        return match ($item['type']) {
+            'series', 'anime', 'k-drama' => '/series/' . $item['slug'],
+            default => '/movie/' . $item['slug'],
+        };
     }
 }
