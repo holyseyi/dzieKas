@@ -23,6 +23,32 @@ use App\Helpers\Validator;
 
 class ContentController extends Controller
 {
+    private function handleVideoUpload(array $file): ?string
+    {
+        if (empty($file['name'])) {
+            return null;
+        }
+
+        if ($file['error'] !== UPLOAD_ERR_OK) {
+            $message = match ($file['error']) {
+                UPLOAD_ERR_INI_SIZE, UPLOAD_ERR_FORM_SIZE => 'Video file is too large. Maximum allowed size is 500MB.',
+                UPLOAD_ERR_PARTIAL => 'Video file was only partially uploaded. Please try again.',
+                UPLOAD_ERR_NO_TMP_DIR => 'Server configuration error: missing temporary directory.',
+                UPLOAD_ERR_CANT_WRITE => 'Server configuration error: failed to write file to disk.',
+                default => 'Video upload failed with error code ' . $file['error'] . '.',
+            };
+            Session::flash('error', $message);
+            return null;
+        }
+
+        $video = Video::upload($file, 'videos');
+        if (!$video) {
+            Session::flash('error', 'Failed to upload video. Ensure the file is MP4 or WebM format and under 500MB.');
+        }
+
+        return $video;
+    }
+
     public function index(): void
     {
         $contentModel = new Content();
@@ -141,12 +167,13 @@ class ContentController extends Controller
             }
         }
 
-        if (!empty($_FILES['video_file']['name'])) {
-            $video = Video::upload($_FILES['video_file'], 'videos');
-            if ($video) {
-                $data['video_path'] = $video;
-                $data['video_type'] = 'upload';
-            }
+        $video = $this->handleVideoUpload($_FILES['video_file'] ?? []);
+        if ($video) {
+            $data['video_path'] = $video;
+            $data['video_type'] = 'upload';
+        } elseif (!empty($_FILES['video_file']['name'])) {
+            $this->redirect('/admin/content/create');
+            return;
         } elseif ($this->input('media_video_id')) {
             $mediaVideo = $db->fetchOne('SELECT * FROM media_files WHERE id = ?', [(int) $this->input('media_video_id')]);
             if ($mediaVideo) {
@@ -277,10 +304,13 @@ class ContentController extends Controller
         }
 
         if (!empty($_FILES['video_file']['name'])) {
-            $video = Video::upload($_FILES['video_file'], 'videos');
+            $video = $this->handleVideoUpload($_FILES['video_file']);
             if ($video) {
                 $data['video_path'] = $video;
                 $data['video_type'] = 'upload';
+            } else {
+                $this->redirect('/admin/content/edit/' . (int) $id);
+                return;
             }
         } elseif ($this->input('media_video_id')) {
             $mediaVideo = $db->fetchOne('SELECT * FROM media_files WHERE id = ?', [(int) $this->input('media_video_id')]);
